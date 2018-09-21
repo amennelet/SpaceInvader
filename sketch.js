@@ -1,16 +1,18 @@
 let backgroundImg;
 let shipImg;
 let ship;
+let bulletImg;
 
 function preload() {
   backgroundImg = loadImage('./assets/bg_space.jpg');
   shipImg = loadImage('./assets/ship.png');
+  bulletImg = loadImage('./assets/bullet_strip.png');
 }
 
 function setup() {
   // put setup code here
   createCanvas(800, 600);
-  ship = new Ship(shipImg, width / 2, height - shipImg.height, 10);
+  ship = new Ship(shipImg, width / 2, height - shipImg.height, 10, bulletImg);
 }
 
 function draw() {
