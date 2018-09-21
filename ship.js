@@ -29,4 +29,8 @@ class Ship {
     stop() {
         this.dir = 0;
     }
+
+    fire() {
+
+    }
 }

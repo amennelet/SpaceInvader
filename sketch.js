@@ -16,18 +16,21 @@ function setup() {
 function draw() {
   background(0);
   image(backgroundImg, 0, 0, width, height);
+  if (keyIsDown(LEFT_ARROW)) {
+    ship.moveLeft();
+  }
+  else if (keyIsDown(RIGHT_ARROW)) {
+    ship.moveRight();
+  }
+  else {
+    ship.stop();
+  }
   ship.update();
   ship.draw();
 }
 
 function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    ship.moveLeft();
-  } else if (keyCode === RIGHT_ARROW) {
-    ship.moveRight();
+  if (keyCode === 32) { // space
+    ship.fire();
   }
-}
-
-function keyReleased() {
-  ship.stop();
 }
