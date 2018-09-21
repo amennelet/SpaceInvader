@@ -2,6 +2,8 @@ let backgroundImg;
 let shipImg;
 let ship;
 let bulletImg;
+let bullets;
+let speed;
 
 function preload() {
   backgroundImg = loadImage('./assets/bg_space.jpg');
@@ -12,12 +14,26 @@ function preload() {
 function setup() {
   // put setup code here
   createCanvas(800, 600);
-  ship = new Ship(shipImg, width / 2, height - shipImg.height, 10, bulletImg);
+
+  speed = 10;
+  ship = new Ship(shipImg, width / 2, height - shipImg.height, speed, bulletImg);
+  bullets = [];
 }
 
 function draw() {
   background(0);
   image(backgroundImg, 0, 0, width, height);
+
+  for (let index = 0; index < bullets.length; index++) {
+    const bullet = bullets[index];
+    bullet.update();
+    bullet.draw();
+    if (bullet.pos.y <= -100) {
+      bullets.splice(index, 1);
+      index--;
+    }
+  }
+
   if (keyIsDown(LEFT_ARROW)) {
     ship.moveLeft();
   }
@@ -29,10 +45,16 @@ function draw() {
   }
   ship.update();
   ship.draw();
+
+  if (floor(frameCount % speed) == 0) {
+    if (keyIsDown(32)) { // space
+      bullets.push(ship.fire());
+    }
+  }
 }
 
 function keyPressed() {
   if (keyCode === 32) { // space
-    ship.fire();
+    bullets.push(ship.fire());
   }
 }
