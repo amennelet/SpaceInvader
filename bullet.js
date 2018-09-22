@@ -17,6 +17,7 @@ class Bullet {
         translate(this.pos.x, this.pos.y);
         this.spriteIndex = floor(this.pos.y * 3 / height);
         if (this.spriteIndex < 0) this.spriteIndex = 0;
+        if (this.spriteIndex > 2) this.spriteIndex = 2;
         image(this.bulletImg.get(0, this.spriteHeight * this.spriteIndex, this.bulletImg.width, this.spriteHeight), 0, 0);
         pop();
     }

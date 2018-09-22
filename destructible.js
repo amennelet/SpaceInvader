@@ -1,8 +1,9 @@
 class Destructible {
-    constructor(pos, width, height) {
+    constructor(pos, width, height, armor) {
         this.pos = pos;
         this.width = width;
         this.height = height;
+        this.armor = armor;
         this.dammage = 0;
     }
 
@@ -16,5 +17,9 @@ class Destructible {
             this.dammage += 1;
         }
         return isCollision;
+    }
+
+    destroyed() {
+        return this.dammage >= this.armor;
     }
 }
