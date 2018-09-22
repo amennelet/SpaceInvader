@@ -1,6 +1,6 @@
 class Asteroid extends Destructible {
     constructor(img, pos) {
-        super(pos, img.width, img.height, 2);
+        super(pos, img.width, img.height, 3);
         this.asteroidImg = img;
     }
 

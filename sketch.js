@@ -9,7 +9,8 @@ let alienImg;
 let aliens;
 
 let asteroidCount = 6;
-let alienCount = 5;
+let alienCount = 4;
+let alienRows = 4;
 let speed = 10;
 
 function preload() {
@@ -27,16 +28,20 @@ function setup() {
   ship = new Ship(shipImg, createVector(width / 2, height - shipImg.height), speed, bulletImg);
   bullets = [];
   asteroids = [];
-  let y = height - shipImg.height - asteroidImg.height - (height / 20);
+  let asteroidY = height - shipImg.height - asteroidImg.height - (height / 20);
   for (let index = 0; index < asteroidCount; index++) {
     let x = (width / asteroidCount * index) + (height / 20);
-    asteroids.push(new Asteroid(asteroidImg, createVector(x, y)));
+    asteroids.push(new Asteroid(asteroidImg, createVector(x, asteroidY)));
   }
   aliens = [];
-  y = alienImg.height;
-  for (let index = 0; index < alienCount; index++) {
-    let x = (width / alienCount * index);
-    aliens.push(new Alien(alienImg, createVector(x, y), speed, bulletImg));
+  for (let row = 0; row < alienRows; row++) {
+    let alienOffset = row * alienImg.height * 1.5;
+    y = alienImg.height - alienOffset;
+    for (let index = 0; index < alienCount; index++) {
+      let spaceBetween = width / (alienCount + 1);
+      let x = (spaceBetween * index) + (row % 2 * (spaceBetween / 2));
+      aliens.push(new Alien(alienImg, createVector(x, y), asteroidY - alienImg.height - alienOffset, speed, bulletImg));
+    }
   }
 }
 
@@ -49,26 +54,26 @@ function draw() {
     bullet.update();
     bullet.draw();
     let toRemove = false;
-    if (bullet.pos.y <= -100 || bullet.pos.y > height + 100) {
+    let collisionPoint = createVector(bullet.pos.x + bullet.bulletImg.width / 2, bullet.pos.y + bullet.spriteHeight / 3);
+    if (collisionPoint.y <= 0 || collisionPoint.y > height) {
       toRemove = true;
     }
-    let collisionPoint = createVector(bullet.pos.x + bullet.bulletImg.width / 2, bullet.pos.y + bullet.spriteHeight / 3);
-
-    asteroids.forEach(asteroid => {
-      if (asteroid.collide(collisionPoint)) {
-        toRemove = true;
-      }
-    });
-    aliens.forEach(alien => {
-      if (bullet.speed > 0) {
-        if (alien.collide(collisionPoint)) {
+    if (!toRemove) {
+      asteroids.forEach(asteroid => {
+        if (asteroid.collide(collisionPoint)) {
           toRemove = true;
         }
+      });
+      aliens.forEach(alien => {
+        if (bullet.speed > 0) {
+          if (alien.collide(collisionPoint)) {
+            toRemove = true;
+          }
+        }
+      });
+      if (ship.collide(collisionPoint)) {
+        toRemove = true;
       }
-    });
-    if (ship.collide(collisionPoint)) {
-      console.log('ship dammage');
-      toRemove = true;
     }
     if (toRemove) {
       bullets.splice(index, 1);
@@ -86,9 +91,16 @@ function draw() {
   }
 
   let leftAlien = aliens[0];
-  let rightAlien = aliens[aliens.length - 1];
-  let alienDir = 0;
+  let rightAlien = aliens[0];
   if (leftAlien) {
+    for (let index = 0; index < aliens.length; index++) {
+      const alien = aliens[index];
+      if (alien.pos.x < leftAlien.pos.x)
+        leftAlien = alien;
+      if (alien.pos.x > rightAlien.pos.x)
+        rightAlien = alien;
+    }
+    let alienDir = 0;
     if (leftAlien.pos.x < 0) {
       alienDir = 1;
     }
@@ -102,7 +114,8 @@ function draw() {
         alien.setDir(alienDir);
       }
       alien.update();
-      alien.fire(bullets);
+      if (alien.pos.y + alien.alienImg.height > 0)
+        alien.fire(bullets);
       alien.draw();
       if (alien.destroyed()) {
         aliens.splice(index, 1);
