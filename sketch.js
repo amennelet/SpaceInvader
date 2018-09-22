@@ -3,21 +3,31 @@ let shipImg;
 let ship;
 let bulletImg;
 let bullets;
-let speed;
+let asteroidImg;
+let asteroids;
+
+let asteroidCount = 6;
+let speed = 10;
 
 function preload() {
   backgroundImg = loadImage('./assets/bg_space.jpg');
   shipImg = loadImage('./assets/ship.png');
   bulletImg = loadImage('./assets/bullet_strip.png');
+  asteroidImg = loadImage('./assets/asteroid.png');
 }
 
 function setup() {
   // put setup code here
   createCanvas(800, 600);
 
-  speed = 10;
   ship = new Ship(shipImg, width / 2, height - shipImg.height, speed, bulletImg);
   bullets = [];
+  asteroids = [];
+  let y = height - shipImg.height - asteroidImg.height;
+  for (let index = 0; index < asteroidCount; index++) {
+    let x = width / asteroidCount * index;
+    asteroids.push(new Asteroid(asteroidImg, createVector(x, y)));
+  }
 }
 
 function draw() {
@@ -32,6 +42,11 @@ function draw() {
       bullets.splice(index, 1);
       index--;
     }
+  }
+
+  for (let index = 0; index < asteroids.length; index++) {
+    const asteroid = asteroids[index];
+    asteroid.draw();
   }
 
   if (keyIsDown(LEFT_ARROW)) {
