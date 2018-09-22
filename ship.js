@@ -1,7 +1,7 @@
-class Ship {
-
-    constructor(img, x, y, speed, bulletImg) {
-        this.pos = createVector(x, y);
+class Ship extends Destructible {
+    constructor(img, pos, speed, bulletImg) {
+        super(pos, img.width, img.height);
+        this.pos = pos;
         this.shipImg = img;
         this.dir = 0;
         this.speed = speed;
@@ -21,10 +21,12 @@ class Ship {
     }
 
     draw() {
-        push();
-        translate(this.pos.x, this.pos.y);
-        image(this.shipImg, 0, 0);
-        pop();
+        if (this.dammage <= 10) {
+            push();
+            translate(this.pos.x, this.pos.y);
+            image(this.shipImg, 0, 0);
+            pop();
+        }
     }
 
     moveLeft() {
@@ -40,6 +42,6 @@ class Ship {
     }
 
     fire() {
-        return new Bullet(this.bulletImg, createVector(this.pos.x, this.pos.y), this.speed + 5);
+        return new Bullet(this.bulletImg, createVector(this.pos.x + this.shipImg.width / 2 - this.bulletImg.width / 2, this.pos.y - this.bulletImg.height / 6), this.speed + 5);
     }
 }

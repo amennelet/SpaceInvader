@@ -20,12 +20,12 @@ function setup() {
   // put setup code here
   createCanvas(800, 600);
 
-  ship = new Ship(shipImg, width / 2, height - shipImg.height, speed, bulletImg);
+  ship = new Ship(shipImg, createVector(width / 2, height - shipImg.height), speed, bulletImg);
   bullets = [];
   asteroids = [];
-  let y = height - shipImg.height - asteroidImg.height;
+  let y = height - shipImg.height - asteroidImg.height - (height / 20);
   for (let index = 0; index < asteroidCount; index++) {
-    let x = width / asteroidCount * index;
+    let x = (width / asteroidCount * index) + (height / 20);
     asteroids.push(new Asteroid(asteroidImg, createVector(x, y)));
   }
 }
@@ -38,7 +38,19 @@ function draw() {
     const bullet = bullets[index];
     bullet.update();
     bullet.draw();
+    let toRemove = false;
     if (bullet.pos.y <= -100) {
+      toRemove = true;
+    }
+    let collisionPoint = createVector(bullet.pos.x + bullet.bulletImg.width / 2, bullet.pos.y + bullet.spriteHeight / 3);
+
+    asteroids.forEach(asteroid => {
+      if (asteroid.collide(collisionPoint)) {
+        toRemove = true;
+      }
+      ship.collide(collisionPoint);
+    });
+    if (toRemove) {
       bullets.splice(index, 1);
       index--;
     }
@@ -46,7 +58,12 @@ function draw() {
 
   for (let index = 0; index < asteroids.length; index++) {
     const asteroid = asteroids[index];
+    asteroid.update();
     asteroid.draw();
+    if (asteroid.destroyed()) {
+      asteroids.splice(index, 1);
+      index--;
+    }
   }
 
   if (keyIsDown(LEFT_ARROW)) {
